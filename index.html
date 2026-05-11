@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Sweet Batch 🍪 — Handcrafted Cookies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  :root{
+    --cream:#FDF6EE;--warm-brown:#5C3D2E;--soft-pink:#F2D4CA;
+    --accent-coral:#E8856C;--accent-green:#7BA68A;
+    --text-dark:#3A2418;--text-mid:#7A6558;--text-light:#B09A8A;
+    --card-bg:#FFFAF5;--shadow-warm:rgba(92,61,46,.08);
+    --shadow-deep:rgba(92,61,46,.15);--radius:16px;--radius-sm:10px;
+  }
+  html,body{background:var(--cream);color:var(--text-dark);font-family:'DM Sans',sans-serif;overflow-x:hidden}
+  #app{min-height:100vh;max-width:480px;margin:0 auto;position:relative}
+
+  /* Header */
+  .header{padding:28px 20px 14px;text-align:center;position:sticky;top:0;background:linear-gradient(to bottom,var(--cream) 85%,transparent);z-index:50}
+  .header h1{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:var(--warm-brown);letter-spacing:-.5px}
+  .header h1 i{font-style:italic;color:var(--accent-coral)}
+  .header-sub{font-size:12px;color:var(--text-light);margin-top:2px;letter-spacing:2px;text-transform:uppercase;font-weight:500}
+
+  /* Tabs */
+  .tabs{display:flex;gap:6px;padding:0 20px 12px;position:sticky;top:76px;z-index:40;background:var(--cream)}
+  .tab{flex:1;padding:10px 0;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .25s;background:0 0;color:var(--text-light)}
+  .tab.on{background:var(--warm-brown);color:#fff;box-shadow:0 4px 12px rgba(92,61,46,.25)}
+  .tab:not(.on):active{background:var(--soft-pink);color:var(--warm-brown)}
+
+  /* Catalog */
+  .catalog{padding:0 16px 120px}
+  .cat-label{font-family:'Playfair Display',serif;font-size:18px;font-weight:600;color:var(--warm-brown);margin:20px 4px 12px;display:flex;align-items:center;gap:8px}
+  .cat-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .card{background:var(--card-bg);border-radius:var(--radius);padding:16px;cursor:pointer;transition:all .3s cubic-bezier(.25,.46,.45,.94);border:2px solid transparent;box-shadow:0 2px 8px var(--shadow-warm);animation:cardPop .4s cubic-bezier(.25,.46,.45,.94) both}
+  .card:active{transform:scale(.97);border-color:var(--soft-pink)}
+  .card.off{opacity:.45;pointer-events:none}
+  .card-emoji{font-size:40px;display:block;margin-bottom:10px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.1))}
+  .card-name{font-family:'Playfair Display',serif;font-size:15px;font-weight:600;color:var(--text-dark);line-height:1.2;margin-bottom:4px}
+  .card-desc{font-size:11.5px;color:var(--text-mid);line-height:1.4;margin-bottom:10px}
+  .card-foot{display:flex;justify-content:space-between;align-items:center}
+  .card-price{font-weight:700;font-size:16px;color:var(--warm-brown)}
+  .add-btn{width:32px;height:32px;border-radius:50%;border:2px solid var(--accent-coral);background:0 0;color:var(--accent-coral);font-size:18px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+  .add-btn:active{background:var(--accent-coral);color:#fff;transform:scale(1.15)}
+  .sold-out{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-light);background:var(--cream);padding:3px 8px;border-radius:20px}
+  @keyframes cardPop{from{opacity:0;transform:scale(.92) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+
+  /* FAB */
+  .fab{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--warm-brown);color:#fff;border:none;border-radius:50px;padding:14px 28px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 8px 32px rgba(92,61,46,.35);display:flex;align-items:center;gap:10px;z-index:100;transition:all .2s;white-space:nowrap}
+  .fab:active{transform:translateX(-50%) scale(.96)}
+  .fab .badge{background:var(--accent-coral);width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+
+  /* Cart */
+  .view{padding:0 16px 40px;animation:fadeUp .3s ease}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+  .stitle{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--warm-brown);margin:16px 4px 16px}
+  .ci{display:flex;align-items:center;gap:12px;background:var(--card-bg);border-radius:var(--radius-sm);padding:14px;margin-bottom:10px;box-shadow:0 2px 8px var(--shadow-warm)}
+  .ci-emoji{font-size:28px}
+  .ci-info{flex:1}
+  .ci-name{font-weight:600;font-size:14px;color:var(--text-dark)}
+  .ci-price{font-size:13px;color:var(--text-mid)}
+  .qty{display:flex;align-items:center;gap:8px}
+  .qb{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--text-light);background:0 0;color:var(--text-dark);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+  .qb:active{border-color:var(--accent-coral);color:var(--accent-coral)}
+  .qn{font-weight:700;font-size:15px;min-width:20px;text-align:center}
+  .total-row{display:flex;justify-content:space-between;align-items:center;padding:16px 4px;margin-top:8px;border-top:2px dashed var(--soft-pink)}
+  .total-label{font-family:'Playfair Display',serif;font-size:18px;font-weight:600;color:var(--warm-brown)}
+  .total-amt{font-size:22px;font-weight:700;color:var(--accent-coral)}
+  .empty{text-align:center;padding:48px 20px;color:var(--text-light)}
+  .empty-emoji{font-size:48px;margin-bottom:12px}
+  .empty-text{font-size:15px;font-weight:500}
+
+  /* Form */
+  .fg{margin-bottom:16px}
+  .fl{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-mid);margin-bottom:6px;display:block}
+  .fi,.ft,.fs{width:100%;padding:12px 14px;border:2px solid var(--soft-pink);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text-dark);background:var(--card-bg);transition:border-color .2s;outline:none;-webkit-appearance:none}
+  .fi:focus,.ft:focus,.fs:focus{border-color:var(--accent-coral)}
+  .ft{min-height:80px;resize:vertical}
+  .fs{cursor:pointer}
+  .fr{display:flex;gap:12px}
+  .fr .fg{flex:1}
+  .submit{width:100%;padding:16px;border:none;border-radius:var(--radius);background:linear-gradient(135deg,var(--accent-coral),#D4714E);color:#fff;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:all .3s;box-shadow:0 4px 16px rgba(232,133,108,.35);margin-top:8px}
+  .submit:active{transform:scale(.98)}
+  .submit:disabled{opacity:.45;pointer-events:none}
+
+  /* Success */
+  .success{text-align:center;padding:60px 20px;animation:fadeUp .4s ease}
+  .success-emoji{font-size:64px;margin-bottom:16px}
+  .success-title{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--warm-brown);margin-bottom:8px}
+  .success-sub{font-size:14px;color:var(--text-mid);line-height:1.5;max-width:280px;margin:0 auto 24px}
+  .back-btn{padding:12px 32px;border:2px solid var(--warm-brown);border-radius:50px;background:0 0;color:var(--warm-brown);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s}
+  .back-btn:active{background:var(--warm-brown);color:#fff}
+
+  /* Admin */
+  .stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px}
+  .stat{background:var(--card-bg);border-radius:var(--radius-sm);padding:14px 12px;text-align:center;box-shadow:0 2px 8px var(--shadow-warm)}
+  .stat-val{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--warm-brown)}
+  .stat-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-light);margin-top:2px}
+  .oc{background:var(--card-bg);border-radius:var(--radius);padding:16px;margin-bottom:12px;box-shadow:0 2px 8px var(--shadow-warm);border-left:4px solid var(--accent-coral)}
+  .oc-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .oc-id{font-weight:700;font-size:14px;color:var(--warm-brown)}
+  .oc-status{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:4px 10px;border-radius:20px;cursor:pointer;border:none;transition:all .2s}
+  .s-new{background:#FDE8D8;color:#C46425}
+  .s-confirmed{background:#D8EDFE;color:#2563A8}
+  .s-baking{background:#FEF3D8;color:#A87D25}
+  .s-ready{background:#D8F5E3;color:#257D45}
+  .s-delivered{background:#E8E8E8;color:#666}
+  .oc-cust{font-size:13px;color:var(--text-mid);margin-bottom:4px}
+  .oc-items{font-size:13px;color:var(--text-dark)}
+  .oc-bottom{display:flex;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:1px solid var(--soft-pink);font-size:13px}
+  .oc-date{color:var(--text-light)}
+  .oc-amt{font-weight:700;color:var(--accent-coral)}
+
+  /* Toast */
+  .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--warm-brown);color:#fff;padding:10px 20px;border-radius:50px;font-size:13px;font-weight:600;z-index:200;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  .hidden{display:none!important}
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- Header -->
+  <div class="header">
+    <h1>Sweet <i>Batch</i> 🍪</h1>
+    <div class="header-sub">Handcrafted with love</div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab on" onclick="switchTab('shop')" id="tab-shop">🍪 Shop</button>
+    <button class="tab" onclick="switchTab('cart')" id="tab-cart">🛒 Cart</button>
+    <button class="tab" onclick="switchTab('admin')" id="tab-admin">📋 Orders</button>
+  </div>
+
+  <!-- Pages -->
+  <div id="page-shop" class="catalog"></div>
+  <div id="page-cart" class="view hidden"></div>
+  <div id="page-admin" class="view hidden"></div>
+
+  <!-- FAB -->
+  <button class="fab hidden" id="fab" onclick="switchTab('cart')">
+    <span class="badge" id="fab-count">0</span>
+    <span id="fab-text">View Cart</span>
+  </button>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+// ── Data ──
+const cookies = [
+  {id:1,name:"Classic Chocolate Chip",price:3.5,desc:"Buttery, golden, loaded with dark chocolate chunks",emoji:"🍪",cat:"Classic",avail:true},
+  {id:2,name:"Red Velvet Crinkle",price:4.0,desc:"Rich cocoa with cream cheese frosting center",emoji:"❤️",cat:"Specialty",avail:true},
+  {id:3,name:"Lemon Sugar Cloud",price:3.5,desc:"Soft, pillowy, dusted with lemon zest sugar",emoji:"🍋",cat:"Classic",avail:true},
+  {id:4,name:"Matcha White Choc",price:4.5,desc:"Ceremonial grade matcha with white chocolate drizzle",emoji:"🍵",cat:"Specialty",avail:true},
+  {id:5,name:"Salted Caramel Brownie",price:4.5,desc:"Fudgy brownie cookie with sea salt caramel swirl",emoji:"🧂",cat:"Specialty",avail:true},
+  {id:6,name:"Peanut Butter Bliss",price:3.5,desc:"Crispy edges, chewy center, Reese's pieces",emoji:"🥜",cat:"Classic",avail:false},
+  {id:7,name:"Strawberry Shortcake",price:4.0,desc:"Freeze-dried strawberries with vanilla bean glaze",emoji:"🍓",cat:"Seasonal",avail:true},
+  {id:8,name:"Ube Crinkle",price:4.5,desc:"Filipino purple yam cookie, chewy & vibrant",emoji:"💜",cat:"Seasonal",avail:true},
+  {id:9,name:"Espresso Snap",price:4.0,desc:"Thin, crispy, intense espresso with dark chocolate",emoji:"☕",cat:"Classic",avail:true},
+];
+
+const catColors = {Classic:"#D4956A",Specialty:"#C46B8A",Seasonal:"#7BA68A"};
+const statusFlow = ["new","confirmed","baking","ready","delivered"];
+const statusLabel = {new:"New",confirmed:"Confirmed",baking:"Baking",ready:"Ready",delivered:"Delivered"};
+const statusBorderColor = {new:"#E8856C",confirmed:"#D4956A",baking:"#D4956A",ready:"#7BA68A",delivered:"#999"};
+
+let cart = {};  // {cookieId: qty}
+let currentTab = "shop";
+let showSuccess = false;
+
+let orders = [
+  {id:"ORD-1047",cust:"Maria Santos",phone:"0917-xxx-1234",items:[{name:"Matcha White Choc",qty:12},{name:"Ube Crinkle",qty:12}],total:108,status:"new",date:"May 12",pickup:"May 14, 2–4 PM",notes:"For a birthday party 🎂"},
+  {id:"ORD-1046",cust:"Jake Reyes",phone:"0918-xxx-5678",items:[{name:"Classic Chocolate Chip",qty:24}],total:84,status:"baking",date:"May 11",pickup:"May 12, 10 AM",notes:""},
+  {id:"ORD-1045",cust:"Anna Cruz",phone:"0919-xxx-9012",items:[{name:"Red Velvet Crinkle",qty:6},{name:"Salted Caramel Brownie",qty:6}],total:51,status:"ready",date:"May 10",pickup:"May 12, 3 PM",notes:"Individually wrapped please"},
+  {id:"ORD-1044",cust:"Ben Torres",phone:"0920-xxx-3456",items:[{name:"Espresso Snap",qty:48}],total:192,status:"delivered",date:"May 8",pickup:"May 9",notes:"Corporate event"},
+];
+
+// ── Helpers ──
+const $ = id => document.getElementById(id);
+const cartItems = () => Object.entries(cart).map(([id,qty])=>({c:cookies.find(x=>x.id==id),qty})).filter(x=>x.c);
+const cartTotal = () => cartItems().reduce((s,{c,qty})=>s+c.price*qty,0);
+const cartCount = () => cartItems().reduce((s,{c,qty})=>s+qty,0);
+
+let toastTimer;
+function toast(msg){
+  const el=$('toast');el.textContent=msg;el.classList.add('show');
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),1800);
+}
+
+// ── Tab switching ──
+function switchTab(t){
+  currentTab=t;showSuccess=false;
+  document.querySelectorAll('.tab').forEach(el=>el.classList.remove('on'));
+  $('tab-'+t).classList.add('on');
+  ['shop','cart','admin'].forEach(p=>{
+    $('page-'+p).classList.toggle('hidden',p!==t);
+  });
+  const cc=cartCount();
+  $('tab-cart').textContent='🛒 Cart'+(cc?' ('+cc+')':'');
+  updateFab();
+  if(t==='cart') renderCart();
+  if(t==='admin') renderAdmin();
+}
+
+function updateFab(){
+  const cc=cartCount();
+  const fab=$('fab');
+  if(currentTab==='shop'&&cc>0){fab.classList.remove('hidden');$('fab-count').textContent=cc;$('fab-text').textContent='View Cart — $'+cartTotal().toFixed(2)}
+  else fab.classList.add('hidden');
+}
+
+// ── Render Shop ──
+function renderShop(){
+  const el=$('page-shop');
+  const groups={};cookies.forEach(c=>{if(!groups[c.cat])groups[c.cat]=[];groups[c.cat].push(c)});
+  let h='';
+  Object.entries(groups).forEach(([cat,list])=>{
+    h+=`<div class="cat-label"><span class="cat-dot" style="background:${catColors[cat]}"></span>${cat}</div><div class="grid">`;
+    list.forEach((c,i)=>{
+      h+=`<div class="card${c.avail?'':' off'}" style="animation-delay:${i*.06}s" ${c.avail?`onclick="addToCart(${c.id})"`:''}>`
+        +`<span class="card-emoji">${c.emoji}</span>`
+        +`<div class="card-name">${c.name}</div>`
+        +`<div class="card-desc">${c.desc}</div>`
+        +`<div class="card-foot"><span class="card-price">$${c.price.toFixed(2)}</span>`
+        +(c.avail?`<button class="add-btn" onclick="event.stopPropagation();addToCart(${c.id})">+</button>`:`<span class="sold-out">Sold out</span>`)
+        +`</div></div>`;
+    });
+    h+=`</div>`;
+  });
+  el.innerHTML=h;
+}
+
+function addToCart(id){
+  cart[id]=(cart[id]||0)+1;
+  const c=cookies.find(x=>x.id===id);
+  toast('Added '+c.name+'!');
+  updateFab();
+  $('tab-cart').textContent='🛒 Cart ('+cartCount()+')';
+}
+
+// ── Render Cart ──
+function renderCart(){
+  const el=$('page-cart');
+  const items=cartItems();
+  if(showSuccess){
+    el.innerHTML=`<div class="success"><div class="success-emoji">🎉</div><div class="success-title">Order Placed!</div><div class="success-sub">We'll confirm your order shortly via Messenger. See you at pickup!</div><button class="back-btn" onclick="showSuccess=false;switchTab('shop')">Back to Shop</button></div>`;
+    return;
+  }
+  if(!items.length){
+    el.innerHTML=`<div class="empty"><div class="empty-emoji">🧁</div><div class="empty-text">Your cart is empty!<br>Go pick some cookies.</div></div>`;
+    return;
+  }
+  let h=`<div class="stitle">Your Order</div>`;
+  items.forEach(({c,qty})=>{
+    h+=`<div class="ci"><span class="ci-emoji">${c.emoji}</span><div class="ci-info"><div class="ci-name">${c.name}</div><div class="ci-price">$${(c.price*qty).toFixed(2)}</div></div><div class="qty"><button class="qb" onclick="changeQty(${c.id},-1)">−</button><span class="qn">${qty}</span><button class="qb" onclick="changeQty(${c.id},1)">+</button></div></div>`;
+  });
+  const tot=cartTotal();
+  h+=`<div class="total-row"><span class="total-label">Total</span><span class="total-amt">$${tot.toFixed(2)}</span></div>`;
+  // form
+  h+=`<div class="stitle" style="margin-top:24px">Pickup Details</div>`
+    +`<div class="fg"><label class="fl">Your Name</label><input class="fi" id="f-name" placeholder="e.g. Maria Santos"></div>`
+    +`<div class="fg"><label class="fl">Phone / Messenger</label><input class="fi" id="f-phone" placeholder="e.g. 0917-123-4567"></div>`
+    +`<div class="fr"><div class="fg"><label class="fl">Pickup Date</label><input class="fi" id="f-date" type="date"></div><div class="fg"><label class="fl">Time Slot</label><select class="fs" id="f-time"><option value="morning">Morning</option><option value="afternoon" selected>Afternoon</option><option value="evening">Evening</option></select></div></div>`
+    +`<div class="fg"><label class="fl">Special Requests</label><textarea class="ft" id="f-notes" placeholder="Allergies, packaging, flavor tweaks..."></textarea></div>`
+    +`<button class="submit" id="submit-btn" onclick="submitOrder()">Place Order — $${tot.toFixed(2)}</button>`;
+  el.innerHTML=h;
+  // validation
+  ['f-name','f-phone','f-date'].forEach(id=>{
+    $(id).addEventListener('input',checkForm);
+  });
+}
+
+function checkForm(){
+  const ok=$('f-name').value.trim()&&$('f-phone').value.trim()&&$('f-date').value;
+  $('submit-btn').disabled=!ok;
+}
+
+function changeQty(id,d){
+  const nq=(cart[id]||0)+d;
+  if(nq<=0) delete cart[id]; else cart[id]=nq;
+  renderCart();updateFab();
+  $('tab-cart').textContent='🛒 Cart'+(cartCount()?' ('+cartCount()+')':'');
+}
+
+function submitOrder(){
+  const name=$('f-name').value.trim();
+  const phone=$('f-phone').value.trim();
+  const date=$('f-date').value;
+  const time=$('f-time').value;
+  const notes=$('f-notes').value.trim();
+  if(!name||!phone||!date) return;
+  const timeLabel={morning:"9–12 PM",afternoon:"1–4 PM",evening:"5–7 PM"};
+  const items=cartItems();
+  orders.unshift({
+    id:'ORD-'+(1048+orders.length),
+    cust:name,phone:phone,
+    items:items.map(({c,qty})=>({name:c.name,qty})),
+    total:cartTotal(),status:"new",date:"Today",
+    pickup:date+', '+timeLabel[time],notes:notes
+  });
+  cart={};showSuccess=true;
+  renderCart();updateFab();
+  $('tab-cart').textContent='🛒 Cart';
+}
+
+// ── Render Admin ──
+function renderAdmin(){
+  const el=$('page-admin');
+  const newC=orders.filter(o=>o.status==='new').length;
+  const prog=orders.filter(o=>['confirmed','baking'].includes(o.status)).length;
+  const rev=orders.reduce((s,o)=>s+o.total,0);
+  let h=`<div class="stitle">Dashboard</div><div class="stats"><div class="stat"><div class="stat-val">${newC}</div><div class="stat-lbl">New</div></div><div class="stat"><div class="stat-val">${prog}</div><div class="stat-lbl">In Progress</div></div><div class="stat"><div class="stat-val">$${rev}</div><div class="stat-lbl">Revenue</div></div></div><div class="stitle">Orders</div>`;
+  orders.forEach((o,i)=>{
+    h+=`<div class="oc" style="border-left-color:${statusBorderColor[o.status]}"><div class="oc-head"><span class="oc-id">${o.id}</span><button class="oc-status s-${o.status}" onclick="cycleStatus(${i})">${statusLabel[o.status]} →</button></div><div class="oc-cust">👤 ${o.cust} · ${o.phone}</div><div class="oc-items">${o.items.map(x=>x.qty+'× '+x.name).join(', ')}</div>${o.notes?'<div class="oc-items" style="font-style:italic;margin-top:4px">"'+o.notes+'"</div>':''}<div class="oc-bottom"><span class="oc-date">📅 ${o.pickup}</span><span class="oc-amt">$${o.total.toFixed(2)}</span></div></div>`;
+  });
+  el.innerHTML=h;
+}
+
+function cycleStatus(i){
+  const idx=statusFlow.indexOf(orders[i].status);
+  orders[i].status=statusFlow[(idx+1)%statusFlow.length];
+  renderAdmin();
+}
+
+// ── Init ──
+renderShop();
+</script>
+</body>
+</html>
